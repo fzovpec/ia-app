@@ -68,38 +68,17 @@ public class XmlReaderModel extends DbManager{
         closeConn();
     }
 
-    public int insertEnrollment(int sectionID, int studentID){
-        int id = 0;
-        PreparedStatement pstmt;
-        String insertSQL;
-
-        openConn();
-        try{
-            insertSQL = String.format("INSERT INTO enrollments (studentID, sectionID) VALUES (%s, %s)", studentID, sectionID);
-            pstmt = conn.prepareStatement(insertSQL, PreparedStatement.RETURN_GENERATED_KEYS);
-            pstmt.executeUpdate();
-            ResultSet rs = pstmt.getGeneratedKeys();
-            rs.next();
-            id = rs.getInt(1);
-            conn.commit();
-        } catch (SQLException ex){
-            System.out.println("Enrollement insert: " + ex.getMessage());
-        }
-
-        closeConn();
-
-        return id;
-    }
-
-    public void insertReport(int enrollmentID, String note1, String note2, String compo, String coef, String comment){
+    public void insertReport(int studentID, int sectionID, String bin1, String bin2, String bin3, String bin4, String bin5,
+                             String bin6, String bin7, String bin8, String coef, String comment){
         Statement stmt;
         String insertSQL = "";
 
         openConn();
         try{
             stmt = conn.createStatement();
-            insertSQL = String.format("INSERT INTO reports (note1, note2, compo, coef, comment, enrollmentID) VALUES " +
-                    "('%s', '%s', '%s', '%s', '%s', %s)", note1, note2, compo, coef, comment, enrollmentID);
+            insertSQL = String.format("INSERT INTO reports (bin1, bin2, bin3, bin4, bin5, bin6, bin7, bin8, coef, comment," +
+                    "studentID, sectionID) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s)",
+                    bin1, bin2, bin3, bin4, bin5, bin6, bin7, bin8, coef, comment, studentID, sectionID);
 
             stmt.execute(insertSQL);
             conn.commit();

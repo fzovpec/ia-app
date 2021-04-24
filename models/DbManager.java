@@ -43,24 +43,16 @@ public class DbManager {
                     + " constraint classID_foreign_key foreign key (courseID) references courses(id))";
             stmt.execute(createSQL);
             System.out.println("Table sections created.");
-            // Enrollments table
-            createSQL = "create table enrollments ("
-                    + " id integer not null generated always as"
-                    + " identity (start with 1, increment by 1),"
-                    + " studentID integer not null, sectionID integer not null,"
-                    + " constraint enrollment_primary_key primary key (id),"
-                    + " constraint studentID_foreign_key foreign key (studentID) references students(id),"
-                    + " constraint coursesID_foreign_key foreign key (sectionID) references sections(id))";
-            stmt.execute(createSQL);
-            System.out.println("Table enrollments created.");
             // Reports table
             createSQL = "create table reports ("
                     + " id integer not null generated always as"
                     + " identity (start with 1, increment by 1),"
-                    + " note1 varchar(50), note2 varchar(50), compo varchar(50),"
-                    + " coef varchar(5), comment varchar(50), enrollmentID integer not null,"
+                    + " bin1 varchar(50), bin2 varchar(50), bin3 varchar(50), bin4 varchar(50), bin5 varchar(50),"
+                    + " bin6 varchar(50), bin7 varchar(50), bin8 varchar(50), coef varchar(5), comment varchar(3000),"
+                    + " studentID integer not null, sectionID integer not null,"
                     + " constraint courses_primary_key primary key (id),"
-                    + " constraint enrollmentID_foreign_key foreign key (enrollmentID) references enrollments(id))";
+                    + " constraint studentID_foreign_key foreign key (studentID) references students(id),"
+                    + " constraint coursesID_foreign_key foreign key (sectionID) references sections(id))";
             stmt.execute(createSQL);
             System.out.println("Table reports created.");
 
