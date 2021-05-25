@@ -73,6 +73,7 @@ public class DbManager {
             DriverManager.registerDriver(new org.apache.derby.jdbc.EmbeddedDriver());
             conn = DriverManager.getConnection("jdbc:derby:" + DBName +";");
             conn.setAutoCommit(false);
+            createTables();
 
         } catch (SQLException EX) {
             System.out.println(EX.getMessage());
