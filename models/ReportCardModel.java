@@ -7,8 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 
-public class ContentPanelModel extends DbManager{
-    public ContentPanelModel(){
+public class ReportCardModel extends DbManager{
+    public ReportCardModel(){
         createOrConnectToDatabase("IADB");
     }
 

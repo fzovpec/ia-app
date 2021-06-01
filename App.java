@@ -1,20 +1,20 @@
-import models.ContentPanelModel;
-import models.DbManager;
-import controllers.XmlReader;
-import views.ContentPanel;
+import controllers.ReportCard;
+import controllers.XmlExporter;
+import models.ReportCardModel;
 import views.GUI;
 
 import javax.swing.*;
-import java.nio.file.Paths;
 
 public class App {
     public static void main(String[] args) {
-        new ContentPanelModel().getReportsData();
+        new ReportCardModel().getReportsData();
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 GUI gui = new GUI();
             }
         });
+        ReportCard[] reportCards = new ReportCardModel().getReportsData();
+        new XmlExporter().exportDataToXml(reportCards, "export.xml");
     }
 }

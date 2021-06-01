@@ -1,7 +1,7 @@
 package views;
 
 import controllers.ReportCard;
-import models.ContentPanelModel;
+import models.ReportCardModel;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -10,7 +10,7 @@ import java.awt.*;
 
 public class ContentPanel {
     JPanel panel = new JPanel();
-    ContentPanelModel model = new ContentPanelModel();
+    ReportCardModel model = new ReportCardModel();
     ReportCard [] reportCards;
 
     DefaultListModel<String> reportCardsListModel = new DefaultListModel<String>();

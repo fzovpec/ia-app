@@ -31,8 +31,15 @@ public class NavigationPanel{
             }
         });
 
+        JButton exportDataButton = new JButton();
+        exportDataButton.setText("Export Data");
+        exportDataButton.setSize(100, 50);
+        exportDataButton.setBackground(new Color(250, 0, 87));
+        exportDataButton.setForeground(new Color(255, 255, 255));
+
         panel.setBackground(new Color(62, 80, 180));
         panel.add(importDataButton);
+        panel.add(exportDataButton);
         panel.setPreferredSize(new Dimension(170, 800));
     }
 
