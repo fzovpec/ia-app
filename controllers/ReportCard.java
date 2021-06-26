@@ -15,12 +15,12 @@ public class ReportCard {
     public String bin6;
     public String bin7;
     public String bin8;
-    public int coef;
+    public String coef;
     public String comment;
 
     public ReportCard(String studentFirstName, String studentLastName, int year, int term, String sectionName,
                       String courseName, String bin1, String bin2, String bin3, String bin4, String bin5, String bin6,
-                      String bin7, String bin8, int coef, String comment){
+                      String bin7, String bin8, String coef, String comment){
         this.studentFirstName = studentFirstName;
         this.studentLastName = studentLastName;
         this.year = year;

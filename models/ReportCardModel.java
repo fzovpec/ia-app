@@ -24,7 +24,6 @@ public class ReportCardModel extends DbManager{
         try{
             stmt = conn.createStatement();
             rs = stmt.executeQuery(statement);
-            int i = 0;
 
             while(rs.next()){
                 ReportCard reportCard = new ReportCard();
@@ -37,7 +36,7 @@ public class ReportCardModel extends DbManager{
                 reportCard.bin6 = rs.getString(7);
                 reportCard.bin7 = rs.getString(8);
                 reportCard.bin8 = rs.getString(9);
-                reportCard.coef = rs.getInt(10);
+                reportCard.coef = rs.getString(10);
                 reportCard.comment = rs.getString(11);
                 reportCard.studentFirstName = rs.getString(15);
                 reportCard.studentLastName = rs.getString(16);
@@ -47,12 +46,11 @@ public class ReportCardModel extends DbManager{
                 reportCard.courseName = rs.getString(23);
 
                 reportCards.add(reportCard);
-
-                i++;
             }
         }
         catch (SQLException ex){
             System.out.println("Error while selecting report cards: " + ex.getMessage());
+            ex.printStackTrace();
         }
 
         ReportCard[] reportCardsArr = reportCards.toArray(new ReportCard[0]);

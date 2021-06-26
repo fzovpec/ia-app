@@ -1,6 +1,7 @@
 package views;
 
 import controllers.ReportCard;
+import controllers.ScreenSwitcher;
 import models.ReportCardModel;
 
 import javax.swing.*;
@@ -16,13 +17,13 @@ public class ContentPanel {
     DefaultListModel<String> reportCardsListModel = new DefaultListModel<String>();
     JList list = new JList(reportCardsListModel);
 
-    public ContentPanel(){
+    public ContentPanel(JFrame frame){
         JLabel pageTitle = new JLabel();
         pageTitle.setText("Report cards");
         pageTitle.setHorizontalAlignment(SwingConstants.LEFT);
 
         reportCards = model.getReportsData();
-        System.out.println(reportCards.length);
+
         for (int i = 0; i < reportCards.length; i++){
             ReportCard reportCard = reportCards[i];
             String dataStringForTheList = String.format("%s %s %s %s", reportCard.studentFirstName,
@@ -43,6 +44,14 @@ public class ContentPanel {
         panel.add(pageTitle);
         panel.add(list);
         panel.setPreferredSize(new Dimension(600, 800));
+
+        ReportCard reportCard = reportCards[0];
+        JPanel reportCardPanel = new ReportCardPanel(reportCard).getPanel();
+        frame.add(reportCardPanel);
+
+        ScreenSwitcher screenSwitcher = new ScreenSwitcher();
+        screenSwitcher.openReportCard(this.getPanel(), reportCardPanel);
+        //screenSwitcher.closeReportCard(this.getPanel(), reportCardPanel);
     }
 
     public JPanel getPanel(){
