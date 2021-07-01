@@ -45,6 +45,9 @@ public class ReportCardModel extends DbManager{
                 reportCard.term = rs.getInt(20);
                 reportCard.courseName = rs.getString(23);
 
+                reportCard.studentID = rs.getInt(12);
+                reportCard.sectionID = rs.getInt(13);
+
                 reportCards.add(reportCard);
             }
         }
@@ -55,5 +58,28 @@ public class ReportCardModel extends DbManager{
 
         ReportCard[] reportCardsArr = reportCards.toArray(new ReportCard[0]);
         return reportCardsArr;
+    }
+
+    public void updateReportCard(ReportCard reportCard){
+        openConn();
+        Statement stmt;
+        String insertSQL;
+
+        try{
+            stmt = conn.createStatement();
+            insertSQL = String.format("UPDATE REPORTS SET BIN1='%s', BIN2='%s', BIN3='%s', BIN4='%s', " +
+                            "BIN5='%s', BIN6='%s', BIN7='%s', BIN8='%s', COEF='%s', COMMENT='%s' " +
+                            "WHERE STUDENTID=%s AND SECTIONID=%s",
+                    reportCard.bin1, reportCard.bin2, reportCard.bin3, reportCard.bin4,
+                    reportCard.bin5, reportCard.bin6, reportCard.bin7, reportCard.bin8,
+                    reportCard.coef, reportCard.comment, reportCard.studentID, reportCard.sectionID);
+            stmt.execute(insertSQL);
+            // Need to look at the other files, query submission is missing here
+            conn.commit();
+
+        }catch (SQLException ex){
+            System.out.println("Update statement has failed " + ex.getMessage());
+        }
+
     }
 }

@@ -18,9 +18,12 @@ public class ReportCard {
     public String coef;
     public String comment;
 
+    public int studentID;
+    public int sectionID;
+
     public ReportCard(String studentFirstName, String studentLastName, int year, int term, String sectionName,
                       String courseName, String bin1, String bin2, String bin3, String bin4, String bin5, String bin6,
-                      String bin7, String bin8, String coef, String comment){
+                      String bin7, String bin8, String coef, String comment, int studentID, int sectionID){
         this.studentFirstName = studentFirstName;
         this.studentLastName = studentLastName;
         this.year = year;
@@ -37,6 +40,9 @@ public class ReportCard {
         this.bin8 = bin8;
         this.coef = coef;
         this.comment = comment;
+
+        this.studentID = studentID;
+        this.sectionID = sectionID;
     }
 
     public ReportCard(){}

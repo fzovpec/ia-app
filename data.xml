@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
     <report>
-        <studID>1</studID>
+        <studID>312</studID>
         <studLN>Smith</studLN>
         <studFN>Peter</studFN>
         <year>2020</year>
         <term>3</term>
-        <classID>4</classID>
-        <sectID>3</sectID>
+        <classID>4123</classID>
+        <sectID>323</sectID>
         <sectName>D</sectName>
-        <courseID>3</courseID>
+        <courseID>342</courseID>
         <courseName>Math</courseName>
         <bin1></bin1>
         <bin2></bin2>
