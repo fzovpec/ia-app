@@ -8,50 +8,58 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class ContentPanel {
-    JPanel panel = new JPanel();
+    JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+    ScreenSwitcher screenSwitcher = new ScreenSwitcher();
     ReportCardModel model = new ReportCardModel();
     ReportCard [] reportCards;
-
-    DefaultListModel<String> reportCardsListModel = new DefaultListModel<String>();
-    JList list = new JList(reportCardsListModel);
 
     public ContentPanel(JFrame frame){
         JLabel pageTitle = new JLabel();
         pageTitle.setText("Report cards");
-        pageTitle.setHorizontalAlignment(SwingConstants.LEFT);
+        pageTitle.setFont(new Font(null, 0, 18));
+        panel.add(Box.createHorizontalGlue());
+        panel.add(pageTitle);
+        panel.add(Box.createHorizontalGlue());
 
         reportCards = model.getReportsData();
 
         for (int i = 0; i < reportCards.length; i++){
+            JPanel reportCardPanel = new JPanel();
+
             ReportCard reportCard = reportCards[i];
-            String dataStringForTheList = String.format("%s %s %s %s", reportCard.studentFirstName,
-                    reportCard.studentLastName, reportCard.courseName, reportCard.sectionName);
-            reportCardsListModel.addElement(dataStringForTheList);
+
+            JLabel studentName = new JLabel(reportCard.studentFirstName + " " + reportCard.studentLastName);
+            JLabel courseName = new JLabel(reportCard.courseName);
+            JLabel sectionName = new JLabel(reportCard.sectionName);
+            JButton openReportCardButton = new JButton("Modify");
+
+            reportCardPanel.add(studentName);
+            reportCardPanel.add(courseName);
+            reportCardPanel.add(sectionName);
+            reportCardPanel.add(openReportCardButton);
+
+            JPanel thisPanel = this.getPanel();
+            JPanel reportCardPanelOtherWindow = new ReportCardPanel(reportCard).getPanel();
+            reportCardPanelOtherWindow.setVisible(false);
+            frame.add(reportCardPanelOtherWindow);
+
+            openReportCardButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    screenSwitcher.openReportCard(thisPanel, reportCardPanelOtherWindow);
+                }
+            });
+
+
+            reportCardPanel.setPreferredSize(new Dimension(600, 30));
+            panel.add(reportCardPanel);
         }
 
-        list.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()) {
-                    int selectedIndex = list.getSelectedIndex();
-
-                }
-            }
-        });
-
-        panel.add(pageTitle);
-        panel.add(list);
         panel.setPreferredSize(new Dimension(600, 800));
-
-        ReportCard reportCard = reportCards[0];
-        JPanel reportCardPanel = new ReportCardPanel(reportCard).getPanel();
-        frame.add(reportCardPanel);
-
-        ScreenSwitcher screenSwitcher = new ScreenSwitcher();
-        screenSwitcher.openReportCard(this.getPanel(), reportCardPanel);
-        //screenSwitcher.closeReportCard(this.getPanel(), reportCardPanel);
     }
 
     public JPanel getPanel(){
