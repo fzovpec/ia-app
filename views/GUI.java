@@ -1,12 +1,8 @@
 package views;
 
-import controllers.ImportDataController;
-import controllers.XmlReader;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class GUI {
     JFrame frame = new JFrame();
