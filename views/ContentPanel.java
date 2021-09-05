@@ -5,8 +5,6 @@ import controllers.ScreenSwitcher;
 import models.ReportCardModel;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
@@ -23,6 +21,7 @@ public class ContentPanel {
     DefaultTableModel tableModel = new DefaultTableModel();
 
     public ContentPanel(JFrame frame){
+        panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
         ReportCard[] reportCards = model.getReportsData();
         Object[][] tableContent = this.getTheDataForTheTable(reportCards);
         Object[] columnTitles = new Object[]{"First Name", "Second Name", "bin1", "bin2", "Comment"};
@@ -48,9 +47,9 @@ public class ContentPanel {
             }
         });
 
-
         panel.add(scroll);
         panel.add(saveButton);
+        panel.add(Box.createRigidArea(new Dimension(0,5)));
         panel.setPreferredSize(new Dimension(600, 800));
     }
 

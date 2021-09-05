@@ -12,6 +12,7 @@ public class ModifyMessage {
     JFrame frame = new JFrame();
 
     public ModifyMessage(int identifier){
+        frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.PAGE_AXIS));
         ReportCardModel reportCardModel = new ReportCardModel();
         ReportCard reportCard = reportCardModel.getReportsData()[identifier];
         JLabel label = new JLabel(reportCard.studentFirstName + " " + reportCard.studentLastName);
@@ -29,12 +30,14 @@ public class ModifyMessage {
             }
         });
 
-        frame.add(saveButton);
-        frame.add(commentArea);
         frame.add(label);
+        frame.add(Box.createRigidArea(new Dimension(0, 10)));
+        frame.add(commentArea);
+        frame.add(Box.createRigidArea(new Dimension(0, 10)));
+        frame.add(saveButton);
 
         frame.setPreferredSize(new Dimension(300, 400));
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setTitle("Ecole");
         frame.pack();
         frame.setVisible(true);
