@@ -24,7 +24,7 @@ public class ContentPanel {
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
         ReportCard[] reportCards = model.getReportsData();
         Object[][] tableContent = this.getTheDataForTheTable(reportCards);
-        Object[] columnTitles = new Object[]{"First Name", "Second Name", "bin1", "bin2", "Comment"};
+        Object[] columnTitles = new Object[]{"First Name", "Second Name", "bin1", "bin2", "coef", "Comment"};
         tableModel.setDataVector(tableContent, columnTitles);
 
         JTable table = new JTable(tableModel);
@@ -64,7 +64,7 @@ public class ContentPanel {
         for(int i = 0; i < reportCards.length; i++){
             ReportCard reportCard = reportCards[i];
             Object[] reportCardData = new Object[]{
-                    reportCard.studentFirstName, reportCard.studentLastName, reportCard.bin1, reportCard.bin2, "Modify " + i
+                    reportCard.studentFirstName, reportCard.studentLastName, reportCard.bin1, reportCard.bin2, reportCard.coef, "Modify " + i
             };
             tableData[i] = reportCardData;
         }

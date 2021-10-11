@@ -4,6 +4,7 @@ import models.ReportCardModel;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -11,10 +12,24 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.io.File;
 import java.io.FileOutputStream;
 
 public class XmlExporter {
     ReportCardModel model = new ReportCardModel();
+
+    public String chooseTheFile(JFrame frame){
+        File file;
+        JFileChooser fc = new JFileChooser();
+        int returnVal = fc.showOpenDialog(frame);
+        if(returnVal == JFileChooser.APPROVE_OPTION){
+            file = fc.getSelectedFile();
+            return file.getAbsoluteFile().toString();
+        }
+
+        return "";
+    }
+
     public void exportDataToXml(ReportCard[] reportCards, String filePath){
         try {
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();

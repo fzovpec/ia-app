@@ -18,3 +18,7 @@ public class App {
         new XmlExporter().exportDataToXml(reportCards, "export.xml");
     }
 }
+
+//More students; Show the import, export button; full screen; menu bar; information; scroll; flexible bins maximum
+// bins appear; on the right side filtering by classname, year, term; or on the left all classes, terms and years
+// generate random students; additional information; two inputs one average, third - two averages

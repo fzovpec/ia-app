@@ -1,7 +1,9 @@
 package views;
 
 import controllers.ImportDataController;
+import controllers.XmlExporter;
 import controllers.XmlReader;
+import models.XmlExporterModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,6 +38,11 @@ public class NavigationPanel{
         exportDataButton.setSize(100, 50);
         exportDataButton.setBackground(new Color(250, 0, 87));
         exportDataButton.setForeground(new Color(255, 255, 255));
+        exportDataButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            }
+        });
 
         panel.setBackground(new Color(62, 80, 180));
         panel.add(importDataButton);

@@ -1,24 +1,405 @@
-package views;
+package views; /**
+ * This is a 9th example of an "Application Window".
+ * It generates a window with 6 components : a label, a text field, 3 button, and a list.
+ * There are also 2 panels = a right panel and a left panel.
+ * The list is added to the left panel.
+ * All other components are added to the right panel.
+ * 
+ * NEW : This class adds a menu bar to the window
+ *         
+ * @author DL 
+ * @version 01/12/2020
+ */
 
-
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
+import javax.swing.filechooser.*;
+import javax.swing.table.DefaultTableModel;
 
-public class GUI {
-    JFrame frame = new JFrame();
+// Libs required by MigLayout
+import controllers.ImportDataController;
+import controllers.ReportCard;
+import controllers.XmlExporter;
+import controllers.XmlReader;
+import models.ReportCardModel;
+import net.miginfocom.swing.MigLayout;
 
-    public GUI(){
-        JPanel menuPanel = new NavigationPanel(frame).getPanel();
-        JPanel contentPanel = new ContentPanel(frame).getPanel();
+// Libs required to manage events
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-        frame.add(menuPanel);
-        frame.add(contentPanel);
+import java.io.*;
 
-        frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.LINE_AXIS));
-        frame.setPreferredSize(new Dimension(700, 800));
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setTitle("Ecole");
-        frame.pack();
-        frame.setVisible(true);
+
+public class GUI extends JFrame {
+    
+    // instance variables
+    JPanel contentPanel;
+    JPanel filteringPanel;
+    JSplitPane splSPLIT;
+    
+    JLabel labONE;
+    JTextField txtTWO;
+    JButton butTHREE;
+    JButton butREAD;
+    JButton butSAVE;
+    
+    DefaultListModel model1;
+    JList lstFOUR;
+    
+    JMenuBar menuBar;
+    
+    JToolBar toolBar;
+    JButton butOpen;
+    JButton butSave;
+    JButton butFind;
+    JButton butPreferences;
+    
+    String FILEPATH;
+    
+    /* MAIN method
+    *  
+    */
+    public static void main( String args[] ){
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                GUI myWindow = new GUI();
+            }
+        
+        });
     }
-}
+    
+    
+    /**
+     * Constructor for objects of class MainWindow08
+     */
+    public GUI(){
+        
+        // 1. -- Frame title and size
+        this.setTitle("Ecole");
+        this.setPreferredSize(new Dimension(1200,600));  
+        this.getContentPane().setLayout(new MigLayout());
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        // 2. -- Prepare the panels AND a splitPanel (which allows for resizing)
+        contentPanel = new JPanel();
+        contentPanel.setLayout(new MigLayout("width 100%", "left", "top"));
+
+        filteringPanel = new JPanel();
+        filteringPanel.setBackground(new Color(250,250,250));
+        filteringPanel.setLayout(new MigLayout("width 100%", "left", "top"));
+       
+        splSPLIT = new JSplitPane(SwingConstants.VERTICAL, contentPanel, filteringPanel);
+        splSPLIT.setOrientation(SwingConstants.VERTICAL);
+        splSPLIT.setResizeWeight(0.5);
+            
+        // 3. -- Prepare the label
+        labONE = new JLabel();
+        labONE.setFont(new Font("sansserif",0,14));
+        labONE.setText("This is a label:"); 
+
+        // 4. -- Prepare the text field
+        txtTWO = new JTextField(20);
+        txtTWO.setFont(new Font("sansserif",0,14));
+
+        // 5. -- Prepare the ADD WORD button
+        butTHREE = new JButton();
+        butTHREE.setFont(new Font("sansserif",0,14));
+        butTHREE.setText("Add Word");
+        butTHREE.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                addItemToList();
+                
+            }
+        });        
+
+        // 6. -- Prepare the READ button
+        butREAD = new JButton();
+        butREAD.setFont(new Font("sansserif",0,14));
+        butREAD.setText("Read File");
+        butREAD.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                selectFile('r');
+                readFile();
+                
+            }
+        });  
+
+        // 7. -- Prepare the SAVE button
+        butSAVE = new JButton();
+        butSAVE.setFont(new Font("sansserif",0,14));
+        butSAVE.setText("Export File");
+        butSAVE.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                selectFile('s');
+                saveFile();
+                
+            }
+        });  
+        
+        
+        // 8. -- Prepare the list MODEL and the list
+        //       The list MODEL is a structure that contains the DATA
+        //       displayed through the list
+        DefaultTableModel tableModel = new DefaultTableModel();
+        ReportCardModel model = new ReportCardModel();
+
+        ReportCard[] reportCards = model.getReportsData();
+        Object[][] tableContent = this.getTheDataForTheTable(reportCards);
+        Object[] columnTitles = new Object[]{"First Name", "Second Name", "bin1", "bin2", "coef", "Comment"};
+        tableModel.setDataVector(tableContent, columnTitles);
+
+        JTable table = new JTable(tableModel);
+        table.getColumn("Comment").setCellRenderer(new ButtonRenderer());
+        table.getColumn("Comment").setCellEditor(new ButtonEditor(new JCheckBox()));
+
+        JScrollPane scroll = new JScrollPane(table);
+        table.setPreferredScrollableViewportSize(table.getPreferredSize());
+        table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+        table.getColumnModel().getColumn(0).setPreferredWidth(100);
+           
+        
+        // 9. -- Add the menubar to the window
+        generateMenu();
+        setJMenuBar(menuBar);        
+        
+        
+        // 10. -- Add all components to the panels, and the panels to the window   
+        contentPanel.add(scroll,"width 250:250:250, height 100%, grow, gapright 10");
+        contentPanel.add(butREAD,"right, bottom, width 50, gapright 10");
+        contentPanel.add(butSAVE,"right, bottom, width 50, span");
+        
+        filteringPanel.add(labONE,"width 100:100:100, height 20");
+        filteringPanel.add(txtTWO,"width 200:200:200, height 20, wrap 15");
+        filteringPanel.add(butTHREE,"right, width 50, span, wrap 15");
+        
+        add(splSPLIT,"width 100%, height 100%");
+        getRootPane().setDefaultButton(butTHREE);
+        
+        // 11. -- Set some of the frame parameters, then close operation        
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);        
+        setResizable(true);
+        pack();
+        setVisible(true);        
+        
+    }  
+    
+    
+    /**
+     * This method opens an item from the textbox in the right panel
+     * to the list in the left panel.
+     */
+    private void addItemToList(){
+        if (txtTWO.getText().compareTo("")!=0){
+            model1.addElement(txtTWO.getText());
+            txtTWO.setText("");
+
+        }    
+    }
+    
+    
+    /**
+     * This method will open the FileChooser dialogbox and
+     * select a file to read.
+     */
+    private void selectFile(char sel){
+        int result;
+        
+        JFileChooser fileChooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Text files", "txt", "text");
+        fileChooser.setFileFilter(filter); 
+        if (sel == 's'){
+            XmlExporter exporter = new XmlExporter();
+            ReportCard[] reportCards = new ReportCardModel().getReportsData();
+            String filePath = exporter.chooseTheFile(this);
+            exporter.exportDataToXml(reportCards, filePath);
+
+        }else{
+            ImportDataController importDataController = new ImportDataController();
+            String filePath = importDataController.chooseTheFile(this);
+            if (importDataController.verifyFile(filePath)){
+                XmlReader.readXML(filePath);
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "Unfortunately it's not possible to read this file");
+            }
+        }
+
+    } 
+
+    
+    /**
+     * This method reads the content of a text file using a BufferedReader object
+     */
+    private void readFile(){
+        try (BufferedReader MYFILE = new BufferedReader(new FileReader(FILEPATH))){
+            String LINE = null;
+            
+            model1.clear();
+             
+            while ((LINE = MYFILE.readLine()) != null){
+                model1.addElement(LINE);
+     
+            }
+            
+            MYFILE.close();
+
+        }catch(Exception e){
+            System.out.println(e);
+            return;
+        }                
+    }   
+    
+
+    /**
+     * This method saves the content of the listModel 'model1' in a text file using a BufferedReader object
+     */
+    private void saveFile(){
+        try (BufferedWriter MYFILE = new BufferedWriter(new FileWriter(FILEPATH))){
+            for(int C=0; C<model1.getSize(); C++){
+                if(C>0) MYFILE.newLine();
+                MYFILE.write((String)model1.getElementAt(C));     
+                
+            }
+            
+            MYFILE.close();
+
+        }catch(Exception e){
+            System.out.println(e);
+            return;
+        }        
+    }    
+    
+    
+    /**  
+     * OK/CANCEL confirmation popup dialogbox
+     * returns 0 if OK
+     */
+    public int askConfirmation(String theTitle, String theMessage) {
+        int result = JOptionPane.showConfirmDialog((Component) null, theMessage, theTitle, JOptionPane.OK_CANCEL_OPTION);
+        return result;
+    }
+    
+    
+    /** 
+    * DISPLAY the ABOUT message
+    */
+    private void displayAboutMessage(){
+        JOptionPane.showMessageDialog(this,"My Application\nVersion 1.0","About...",JOptionPane.INFORMATION_MESSAGE);
+        
+    } 
+    
+    
+    /**  
+    * CLOSE FRAME
+    */    
+    private void exit(String theTitle, String theMessage){
+        int i = askConfirmation(theTitle, theMessage);
+        if (i == 0){ 
+            dispose();
+        }
+    }    
+    
+    
+    /** 
+     * MENU GENERATOR
+     */
+    private void generateMenu(){
+        menuBar = new JMenuBar();
+
+        JMenu menuFile = new JMenu("File");
+        JMenu menuEdit = new JMenu("Edit");
+        JMenu menuSearch = new JMenu("Search");        
+        JMenu menuHelp = new JMenu("Help");
+        
+        ImageIcon iOpen = new ImageIcon("images/open_s.png");        
+        ImageIcon iSave = new ImageIcon("images/save_s.png"); 
+        ImageIcon iExit = new ImageIcon("images/cross_s.png");        
+        ImageIcon iCut = new ImageIcon("images/cut_s.png");  
+        ImageIcon iCopy = new ImageIcon("images/copy_s.png");  
+        ImageIcon iPaste = new ImageIcon("images/paste_s.png");           
+        ImageIcon iFind = new ImageIcon("images/find_s.png");
+        ImageIcon iPrefs = new ImageIcon("images/preferences_s.png");       
+        ImageIcon iAbout = new ImageIcon("images/about_s.png"); 
+        
+        JMenuItem comOpen = new JMenuItem("Open",iOpen);
+        JMenuItem comSave = new JMenuItem("Export",iSave);
+        JMenuItem comExit = new JMenuItem("Exit",iExit);
+        JMenuItem comCut = new JMenuItem("Cut",iCut);
+        JMenuItem comCopy = new JMenuItem("Copy",iCopy);
+        JMenuItem comPaste = new JMenuItem("Paste",iPaste);
+        JMenuItem comSearch = new JMenuItem("Search...",iFind);
+        JMenuItem comPrefs = new JMenuItem("Preferences...",iPrefs);   
+        JMenuItem comAbout = new JMenuItem("About...",iAbout);
+
+        // add action listener to the Open menu item
+        comOpen.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                selectFile('s');
+                readFile();
+            }
+        });
+
+        // add action listener to the Save menu item
+        comSave.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                selectFile('s');
+                saveFile();                
+            }
+        });        
+        
+        // add action listener to the Exit menu item
+        comExit.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                exit("Confirm","Do you really want to quit?");
+            }
+        });
+        
+        // add action listener to the ABOUT menu item
+        comAbout.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                displayAboutMessage();
+            }
+        });    
+        
+        menuFile.add(comOpen);
+        menuFile.add(comSave);
+        menuFile.addSeparator(); 
+        menuFile.add(comExit);
+        
+        menuEdit.add(comCut);
+        menuEdit.add(comCopy);
+        menuEdit.add(comPaste);
+        
+        menuSearch.add(comSearch);
+
+        menuHelp.add(comPrefs);
+        menuHelp.addSeparator();                
+        menuHelp.add(comAbout);
+
+        menuBar.add(menuFile);
+        menuBar.add(menuEdit);
+        menuBar.add(menuSearch);      
+        menuBar.add(menuHelp);
+    }
+
+    public Object[][] getTheDataForTheTable(ReportCard[] reportCards){
+
+        Object[][] tableData = new Object[reportCards.length][];
+
+        for(int i = 0; i < reportCards.length; i++){
+            ReportCard reportCard = reportCards[i];
+            Object[] reportCardData = new Object[]{
+                    reportCard.studentFirstName, reportCard.studentLastName, reportCard.bin1, reportCard.bin2, reportCard.coef, "Modify " + i
+            };
+            tableData[i] = reportCardData;
+        }
+
+        return tableData;
+    }
+    
+}    
+    
+   
+   
