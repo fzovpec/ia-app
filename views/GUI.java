@@ -17,10 +17,7 @@ import javax.swing.filechooser.*;
 import javax.swing.table.DefaultTableModel;
 
 // Libs required by MigLayout
-import controllers.ImportDataController;
-import controllers.ReportCard;
-import controllers.XmlExporter;
-import controllers.XmlReader;
+import controllers.*;
 import models.ReportCardModel;
 import net.miginfocom.swing.MigLayout;
 
@@ -29,6 +26,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import java.io.*;
+import java.util.Arrays;
 
 
 public class GUI extends JFrame {
@@ -39,10 +37,10 @@ public class GUI extends JFrame {
     JSplitPane splSPLIT;
     
     JLabel labONE;
-    JTextField txtTWO;
-    JButton butTHREE;
+    JButton doFilteringButton;
     JButton butREAD;
     JButton butSAVE;
+    FilteringController filteringController;
     
     DefaultListModel model1;
     JList lstFOUR;
@@ -84,7 +82,7 @@ public class GUI extends JFrame {
         
         // 2. -- Prepare the panels AND a splitPanel (which allows for resizing)
         contentPanel = new JPanel();
-        contentPanel.setLayout(new MigLayout("width 100%", "left", "top"));
+        contentPanel.setLayout(new MigLayout("center, wrap, width 100%", "left", "top"));
 
         filteringPanel = new JPanel();
         filteringPanel.setBackground(new Color(250,250,250));
@@ -92,29 +90,26 @@ public class GUI extends JFrame {
        
         splSPLIT = new JSplitPane(SwingConstants.VERTICAL, contentPanel, filteringPanel);
         splSPLIT.setOrientation(SwingConstants.VERTICAL);
-        splSPLIT.setResizeWeight(0.5);
+        splSPLIT.setResizeWeight(0.9);
             
         // 3. -- Prepare the label
         labONE = new JLabel();
         labONE.setFont(new Font("sansserif",0,14));
-        labONE.setText("This is a label:"); 
-
-        // 4. -- Prepare the text field
-        txtTWO = new JTextField(20);
-        txtTWO.setFont(new Font("sansserif",0,14));
+        labONE.setText("Filter:");
 
         // 5. -- Prepare the ADD WORD button
-        butTHREE = new JButton();
-        butTHREE.setFont(new Font("sansserif",0,14));
-        butTHREE.setText("Add Word");
-        butTHREE.addActionListener(new ActionListener() {
+        doFilteringButton = new JButton();
+        doFilteringButton.setFont(new Font("sansserif",0,14));
+        doFilteringButton.setText("Filter");
+        doFilteringButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                addItemToList();
-                
             }
         });        
 
         // 6. -- Prepare the READ button
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new MigLayout("width 100%", "left", "top"));
+
         butREAD = new JButton();
         butREAD.setFont(new Font("sansserif",0,14));
         butREAD.setText("Read File");
@@ -136,7 +131,9 @@ public class GUI extends JFrame {
                 saveFile();
                 
             }
-        });  
+        });
+        buttonPanel.add(butREAD,"right, bottom");
+        buttonPanel.add(butSAVE,"right, bottom");
         
         
         // 8. -- Prepare the list MODEL and the list
@@ -151,8 +148,6 @@ public class GUI extends JFrame {
         tableModel.setDataVector(tableContent, columnTitles);
 
         JTable table = new JTable(tableModel);
-        table.getColumn("Comment").setCellRenderer(new ButtonRenderer());
-        table.getColumn("Comment").setCellEditor(new ButtonEditor(new JCheckBox()));
 
         JScrollPane scroll = new JScrollPane(table);
         table.setPreferredScrollableViewportSize(table.getPreferredSize());
@@ -162,20 +157,41 @@ public class GUI extends JFrame {
         
         // 9. -- Add the menubar to the window
         generateMenu();
-        setJMenuBar(menuBar);        
+        setJMenuBar(menuBar);
+
+        // Combo boxes
+        filteringController = new FilteringController();
+
+        int[] years = filteringController.getYears(reportCards);
+        Arrays.sort(years);
+        String[] yearsString = Arrays.toString(years).split("[\\[\\]]")[1].split(", ");
+
+        int[] terms = filteringController.getTerms(reportCards);
+        Arrays.sort(years);
+        String[] termsString = Arrays.toString(years).split("[\\[\\]]")[1].split(", ");
+
+        String[] courses = filteringController.getCourses(reportCards);
+        String[] sections = filteringController.getSections(reportCards);
+
+        JComboBox yearsCombo = new JComboBox(yearsString);
+        JComboBox courseCombo = new JComboBox(courses);
+        JComboBox sectionCombo = new JComboBox(sections);
+        JComboBox termsCombo = new JComboBox(termsString);
         
         
         // 10. -- Add all components to the panels, and the panels to the window   
-        contentPanel.add(scroll,"width 250:250:250, height 100%, grow, gapright 10");
-        contentPanel.add(butREAD,"right, bottom, width 50, gapright 10");
-        contentPanel.add(butSAVE,"right, bottom, width 50, span");
-        
+        contentPanel.add(scroll,"width 100%, height 90%");
+        contentPanel.add(buttonPanel);
+
         filteringPanel.add(labONE,"width 100:100:100, height 20");
-        filteringPanel.add(txtTWO,"width 200:200:200, height 20, wrap 15");
-        filteringPanel.add(butTHREE,"right, width 50, span, wrap 15");
+        filteringPanel.add(yearsCombo);
+        filteringPanel.add(courseCombo);
+        filteringPanel.add(sectionCombo);
+        filteringPanel.add(termsCombo);
+        filteringPanel.add(doFilteringButton,"right, width 50, span, wrap 15");
         
         add(splSPLIT,"width 100%, height 100%");
-        getRootPane().setDefaultButton(butTHREE);
+        getRootPane().setDefaultButton(doFilteringButton);
         
         // 11. -- Set some of the frame parameters, then close operation        
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);        
@@ -183,19 +199,6 @@ public class GUI extends JFrame {
         pack();
         setVisible(true);        
         
-    }  
-    
-    
-    /**
-     * This method opens an item from the textbox in the right panel
-     * to the list in the left panel.
-     */
-    private void addItemToList(){
-        if (txtTWO.getText().compareTo("")!=0){
-            model1.addElement(txtTWO.getText());
-            txtTWO.setText("");
-
-        }    
     }
     
     
@@ -391,7 +394,7 @@ public class GUI extends JFrame {
         for(int i = 0; i < reportCards.length; i++){
             ReportCard reportCard = reportCards[i];
             Object[] reportCardData = new Object[]{
-                    reportCard.studentFirstName, reportCard.studentLastName, reportCard.bin1, reportCard.bin2, reportCard.coef, "Modify " + i
+                    reportCard.studentFirstName, reportCard.studentLastName, reportCard.bin1, reportCard.bin2, reportCard.coef, reportCard.comment
             };
             tableData[i] = reportCardData;
         }
