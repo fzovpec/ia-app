@@ -20,6 +20,7 @@ import javax.swing.table.DefaultTableModel;
 import controllers.*;
 import models.ReportCardModel;
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.lang3.ArrayUtils;
 
 // Libs required to manage events
 import java.awt.event.ActionEvent;
@@ -97,14 +98,7 @@ public class GUI extends JFrame {
         labONE.setFont(new Font("sansserif",0,14));
         labONE.setText("Filter:");
 
-        // 5. -- Prepare the ADD WORD button
-        doFilteringButton = new JButton();
-        doFilteringButton.setFont(new Font("sansserif",0,14));
-        doFilteringButton.setText("Filter");
-        doFilteringButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-            }
-        });        
+
 
         // 6. -- Prepare the READ button
         JPanel buttonPanel = new JPanel();
@@ -142,8 +136,8 @@ public class GUI extends JFrame {
         DefaultTableModel tableModel = new DefaultTableModel();
         ReportCardModel model = new ReportCardModel();
 
-        ReportCard[] reportCards = model.getReportsData();
-        Object[][] tableContent = this.getTheDataForTheTable(reportCards);
+        final ReportCard[][] reportCards = {model.getReportsData()};
+        Object[][] tableContent = GUI.getTheDataForTheTable(reportCards[0]);
         Object[] columnTitles = new Object[]{"First Name", "Second Name", "bin1", "bin2", "coef", "Comment"};
         tableModel.setDataVector(tableContent, columnTitles);
 
@@ -153,7 +147,6 @@ public class GUI extends JFrame {
         table.setPreferredScrollableViewportSize(table.getPreferredSize());
         table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         table.getColumnModel().getColumn(0).setPreferredWidth(100);
-           
         
         // 9. -- Add the menubar to the window
         generateMenu();
@@ -162,21 +155,49 @@ public class GUI extends JFrame {
         // Combo boxes
         filteringController = new FilteringController();
 
-        int[] years = filteringController.getYears(reportCards);
+        int[] years = filteringController.getYears(reportCards[0]);
         Arrays.sort(years);
-        String[] yearsString = Arrays.toString(years).split("[\\[\\]]")[1].split(", ");
+        String[] yearsString = ArrayUtils.addAll(new String[]{"All"}, Arrays.toString(years).split("[\\[\\]]")[1].split(", "));
 
-        int[] terms = filteringController.getTerms(reportCards);
+        int[] terms = filteringController.getTerms(reportCards[0]);
         Arrays.sort(years);
-        String[] termsString = Arrays.toString(years).split("[\\[\\]]")[1].split(", ");
+        String[] termsString = ArrayUtils.addAll(new String[]{"All"}, Arrays.toString(years).split("[\\[\\]]")[1].split(", "));
 
-        String[] courses = filteringController.getCourses(reportCards);
-        String[] sections = filteringController.getSections(reportCards);
+        String[] courses = ArrayUtils.addAll(new String[]{"All"}, filteringController.getCourses(reportCards[0]));
+        String[] sections = ArrayUtils.addAll(new String[]{"All"}, filteringController.getSections(reportCards[0]));
 
         JComboBox yearsCombo = new JComboBox(yearsString);
         JComboBox courseCombo = new JComboBox(courses);
         JComboBox sectionCombo = new JComboBox(sections);
         JComboBox termsCombo = new JComboBox(termsString);
+
+        // 5. -- Prepare the ADD WORD button
+        doFilteringButton = new JButton();
+        doFilteringButton.setFont(new Font("sansserif",0,14));
+        doFilteringButton.setText("Filter");
+        doFilteringButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                ReportCard[] filterReportCards = filteringController.filterReportCards(yearsCombo.getSelectedItem().toString(),
+                        termsCombo.getSelectedItem().toString(), courseCombo.getSelectedItem().toString(), sectionCombo.getSelectedItem().toString(), reportCards[0]);
+
+                contentPanel.removeAll();
+                pack();
+
+                Object[][] tableContent = GUI.getTheDataForTheTable(filterReportCards);
+                Object[] columnTitles = new Object[]{"First Name", "Second Name", "bin1", "bin2", "coef", "Comment"};
+                tableModel.setDataVector(tableContent, columnTitles);
+                JTable table = new JTable(tableModel);
+                JScrollPane scroll = new JScrollPane(table);
+                table.setPreferredScrollableViewportSize(table.getPreferredSize());
+                table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+                table.getColumnModel().getColumn(0).setPreferredWidth(100);
+
+                contentPanel.add(scroll, "width 100%, height 90%");
+                contentPanel.add(buttonPanel);
+                pack();
+            }
+
+        });
         
         
         // 10. -- Add all components to the panels, and the panels to the window   
@@ -200,8 +221,7 @@ public class GUI extends JFrame {
         setVisible(true);        
         
     }
-    
-    
+
     /**
      * This method will open the FileChooser dialogbox and
      * select a file to read.
@@ -387,7 +407,7 @@ public class GUI extends JFrame {
         menuBar.add(menuHelp);
     }
 
-    public Object[][] getTheDataForTheTable(ReportCard[] reportCards){
+    private static Object[][] getTheDataForTheTable(ReportCard[] reportCards){
 
         Object[][] tableData = new Object[reportCards.length][];
 

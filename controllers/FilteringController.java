@@ -1,6 +1,8 @@
 package controllers;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class FilteringController {
     public int [] getYears(ReportCard[] reportCards){
@@ -55,7 +57,32 @@ public class FilteringController {
         return primitiveTerms;
     }
 
-//    public ReportCard[] filterReportCards(int years, int term, String courseName, String sectionName){
-//        return ReportCard[];
-//    }
+    public ReportCard[] filterReportCards(String year, String term, String courseName, String sectionName, ReportCard[] reportCards){
+        if(year.equals("All") && term.equals("All") && courseName.equals("All") && sectionName.equals("All")){
+            return reportCards;
+        }
+        List<ReportCard> filteredReportCards = new LinkedList<>();
+        for(int i = 0; i < reportCards.length; i++) {
+            boolean reportCardFollowsFilteringConditions = true;
+
+            if (!year.equals("All") && reportCards[i].year != Integer.parseInt(year)) {
+                reportCardFollowsFilteringConditions = false;
+            }
+            if (!term.equals("All") && reportCards[i].term != Integer.parseInt(term)) {
+                reportCardFollowsFilteringConditions = false;
+            }
+            if (!courseName.equals("All") && !reportCards[i].courseName.equals(courseName)) {
+                reportCardFollowsFilteringConditions = false;
+            }
+            if (!sectionName.equals("All") && !reportCards[i].sectionName.equals(sectionName)) {
+                reportCardFollowsFilteringConditions = false;
+            }
+
+            if (reportCardFollowsFilteringConditions) {
+                filteredReportCards.add(reportCards[i]);
+            }
+        }
+
+        return filteredReportCards.toArray(new ReportCard[0]);
+    }
 }
