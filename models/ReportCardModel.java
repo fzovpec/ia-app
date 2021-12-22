@@ -70,7 +70,7 @@ public class ReportCardModel extends DbManager{
         try{
             stmt = conn.createStatement();
             insertSQL = String.format("UPDATE REPORTS SET BIN1=%s, BIN2=%s, BIN3=%s, BIN4=%s, " +
-                            "BIN5=%s, BIN6=%s, BIN7=%s, BIN8=%s, COEF='%s', COMMENT='%s' " +
+                            "BIN5=%s, BIN6=%s, BIN7=%s, BIN8=%s, COEF=%s, COMMENT='%s' " +
                             "WHERE STUDENTID=%s AND SECTIONID=%s",
                     reportCard.bins[0], reportCard.bins[1], reportCard.bins[2], reportCard.bins[3],
                     reportCard.bins[4], reportCard.bins[5], reportCard.bins[6], reportCard.bins[7],

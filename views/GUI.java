@@ -13,6 +13,8 @@ package views; /**
 
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.*;
 import javax.swing.table.DefaultTableModel;
 
@@ -41,7 +43,9 @@ public class GUI extends JFrame {
     JButton doFilteringButton;
     JButton butREAD;
     JButton butSAVE;
+    JButton butUPDATE;
     FilteringController filteringController;
+    ReportCard[] reportCards;
     
     DefaultListModel model1;
     JList lstFOUR;
@@ -97,8 +101,39 @@ public class GUI extends JFrame {
         labONE = new JLabel();
         labONE.setFont(new Font("sansserif",0,14));
         labONE.setText("Filter:");
+        
+        
+        // 8. -- Prepare the list MODEL and the list
+        //       The list MODEL is a structure that contains the DATA
+        //       displayed through the list
+        DefaultTableModel tableModel = new DefaultTableModel();
+        ReportCardModel model = new ReportCardModel();
 
+        reportCards = model.getReportsData();
+        Object[][] tableContent = GUI.getTheDataForTheTable(reportCards);
+        Object[] columnTitles = new Object[]{"First Name", "Second Name", "bin1", "average", "bin2", "coef", "Comment"};
+        tableModel.setDataVector(tableContent, columnTitles);
 
+        JTable table = new JTable(tableModel){
+            public Class<?> getColumnClass(int column){
+                return getValueAt(0, column).getClass();
+            }
+            public boolean isCellEditable(int row, int col){
+                if (col==2 || col == 4 || col==6){
+                    return true;
+                }
+                return false;
+            }
+        };
+
+        JScrollPane scroll = new JScrollPane(table);
+        table.setPreferredScrollableViewportSize(table.getPreferredSize());
+        table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+        table.getColumnModel().getColumn(0).setPreferredWidth(100);
+        
+        // 9. -- Add the menubar to the window
+        generateMenu();
+        setJMenuBar(menuBar);
 
         // 6. -- Prepare the READ button
         JPanel buttonPanel = new JPanel();
@@ -111,9 +146,9 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 selectFile('r');
                 readFile();
-                
+
             }
-        });  
+        });
 
         // 7. -- Prepare the SAVE button
         butSAVE = new JButton();
@@ -123,34 +158,29 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 selectFile('s');
                 saveFile();
-                
+
             }
         });
+
+        butUPDATE = new JButton();
+        butUPDATE.setFont(new Font("sansserif",0,14));
+        butUPDATE.setText("Update");
+        butUPDATE.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for(int i = 0; i < table.getRowCount(); i++) {
+                    reportCards[i].bins[0] = Integer.parseInt(table.getValueAt(i, 2).toString());
+                    reportCards[i].bins[1] = Integer.parseInt(table.getValueAt(i, 4).toString());
+                    reportCards[i].comment = (String) table.getValueAt(i, 6);
+
+                    model.updateReportCard(reportCards[i]);
+                }
+            }
+        });
+
         buttonPanel.add(butREAD,"right, bottom");
         buttonPanel.add(butSAVE,"right, bottom");
-        
-        
-        // 8. -- Prepare the list MODEL and the list
-        //       The list MODEL is a structure that contains the DATA
-        //       displayed through the list
-        DefaultTableModel tableModel = new DefaultTableModel();
-        ReportCardModel model = new ReportCardModel();
-
-        final ReportCard[][] reportCards = {model.getReportsData()};
-        Object[][] tableContent = GUI.getTheDataForTheTable(reportCards[0]);
-        Object[] columnTitles = new Object[]{"First Name", "Second Name", "bin1", "average", "bin2", "coef", "Comment"};
-        tableModel.setDataVector(tableContent, columnTitles);
-
-        JTable table = new JTable(tableModel);
-
-        JScrollPane scroll = new JScrollPane(table);
-        table.setPreferredScrollableViewportSize(table.getPreferredSize());
-        table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
-        table.getColumnModel().getColumn(0).setPreferredWidth(100);
-        
-        // 9. -- Add the menubar to the window
-        generateMenu();
-        setJMenuBar(menuBar);
+        buttonPanel.add(butUPDATE, "right bottom");
 
         String[] yearsString = ArrayUtils.addAll(new String[]{"All"});
         String[] termsString = ArrayUtils.addAll(new String[]{"All"});
@@ -160,19 +190,17 @@ public class GUI extends JFrame {
         try {
             filteringController = new FilteringController();
 
-            int[] years = filteringController.getYears(reportCards[0]);
+            int[] years = filteringController.getYears(reportCards);
             Arrays.sort(years);
             yearsString = ArrayUtils.addAll(new String[]{"All"}, Arrays.toString(years).split("[\\[\\]]")[1].split(", "));
 
-            int[] terms = filteringController.getTerms(reportCards[0]);
+            int[] terms = filteringController.getTerms(reportCards);
             Arrays.sort(years);
             termsString = ArrayUtils.addAll(new String[]{"All"}, Arrays.toString(years).split("[\\[\\]]")[1].split(", "));
 
-            courses = ArrayUtils.addAll(new String[]{"All"}, filteringController.getCourses(reportCards[0]));
-            sections = ArrayUtils.addAll(new String[]{"All"}, filteringController.getSections(reportCards[0]));
-        } catch(ArrayIndexOutOfBoundsException e){
-            
-        }
+            courses = ArrayUtils.addAll(new String[]{"All"}, filteringController.getCourses(reportCards));
+            sections = ArrayUtils.addAll(new String[]{"All"}, filteringController.getSections(reportCards));
+        } catch(ArrayIndexOutOfBoundsException e){}
 
         JComboBox yearsCombo = new JComboBox(yearsString);
         JComboBox courseCombo = new JComboBox(courses);
@@ -185,13 +213,13 @@ public class GUI extends JFrame {
         doFilteringButton.setText("Filter");
         doFilteringButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                ReportCard[] filterReportCards = filteringController.filterReportCards(yearsCombo.getSelectedItem().toString(),
-                        termsCombo.getSelectedItem().toString(), courseCombo.getSelectedItem().toString(), sectionCombo.getSelectedItem().toString(), reportCards[0]);
+                reportCards = filteringController.filterReportCards(yearsCombo.getSelectedItem().toString(),
+                        termsCombo.getSelectedItem().toString(), courseCombo.getSelectedItem().toString(), sectionCombo.getSelectedItem().toString(), reportCards);
 
                 contentPanel.removeAll();
                 pack();
 
-                Object[][] tableContent = GUI.getTheDataForTheTable(filterReportCards);
+                Object[][] tableContent = GUI.getTheDataForTheTable(reportCards);
                 Object[] columnTitles = new Object[]{"First Name", "Second Name", "bin1", "average", "bin2", "coef", "Comment"};
                 tableModel.setDataVector(tableContent, columnTitles);
                 JTable table = new JTable(tableModel);
