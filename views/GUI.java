@@ -138,7 +138,7 @@ public class GUI extends JFrame {
 
         final ReportCard[][] reportCards = {model.getReportsData()};
         Object[][] tableContent = GUI.getTheDataForTheTable(reportCards[0]);
-        Object[] columnTitles = new Object[]{"First Name", "Second Name", "bin1", "bin2", "coef", "Comment"};
+        Object[] columnTitles = new Object[]{"First Name", "Second Name", "bin1", "average", "bin2", "coef", "Comment"};
         tableModel.setDataVector(tableContent, columnTitles);
 
         JTable table = new JTable(tableModel);
@@ -152,19 +152,27 @@ public class GUI extends JFrame {
         generateMenu();
         setJMenuBar(menuBar);
 
+        String[] yearsString = ArrayUtils.addAll(new String[]{"All"});
+        String[] termsString = ArrayUtils.addAll(new String[]{"All"});
+        String[] courses = ArrayUtils.addAll(new String[]{"All"});
+        String[] sections = ArrayUtils.addAll(new String[]{"All"});
         // Combo boxes
-        filteringController = new FilteringController();
+        try {
+            filteringController = new FilteringController();
 
-        int[] years = filteringController.getYears(reportCards[0]);
-        Arrays.sort(years);
-        String[] yearsString = ArrayUtils.addAll(new String[]{"All"}, Arrays.toString(years).split("[\\[\\]]")[1].split(", "));
+            int[] years = filteringController.getYears(reportCards[0]);
+            Arrays.sort(years);
+            yearsString = ArrayUtils.addAll(new String[]{"All"}, Arrays.toString(years).split("[\\[\\]]")[1].split(", "));
 
-        int[] terms = filteringController.getTerms(reportCards[0]);
-        Arrays.sort(years);
-        String[] termsString = ArrayUtils.addAll(new String[]{"All"}, Arrays.toString(years).split("[\\[\\]]")[1].split(", "));
+            int[] terms = filteringController.getTerms(reportCards[0]);
+            Arrays.sort(years);
+            termsString = ArrayUtils.addAll(new String[]{"All"}, Arrays.toString(years).split("[\\[\\]]")[1].split(", "));
 
-        String[] courses = ArrayUtils.addAll(new String[]{"All"}, filteringController.getCourses(reportCards[0]));
-        String[] sections = ArrayUtils.addAll(new String[]{"All"}, filteringController.getSections(reportCards[0]));
+            courses = ArrayUtils.addAll(new String[]{"All"}, filteringController.getCourses(reportCards[0]));
+            sections = ArrayUtils.addAll(new String[]{"All"}, filteringController.getSections(reportCards[0]));
+        } catch(ArrayIndexOutOfBoundsException e){
+            
+        }
 
         JComboBox yearsCombo = new JComboBox(yearsString);
         JComboBox courseCombo = new JComboBox(courses);
@@ -184,7 +192,7 @@ public class GUI extends JFrame {
                 pack();
 
                 Object[][] tableContent = GUI.getTheDataForTheTable(filterReportCards);
-                Object[] columnTitles = new Object[]{"First Name", "Second Name", "bin1", "bin2", "coef", "Comment"};
+                Object[] columnTitles = new Object[]{"First Name", "Second Name", "bin1", "average", "bin2", "coef", "Comment"};
                 tableModel.setDataVector(tableContent, columnTitles);
                 JTable table = new JTable(tableModel);
                 JScrollPane scroll = new JScrollPane(table);
@@ -413,8 +421,9 @@ public class GUI extends JFrame {
 
         for(int i = 0; i < reportCards.length; i++){
             ReportCard reportCard = reportCards[i];
+            float average = (float) ((reportCard.bins[0] + reportCard.bins[1]) / 2.0);
             Object[] reportCardData = new Object[]{
-                    reportCard.studentFirstName, reportCard.studentLastName, reportCard.bin1, reportCard.bin2, reportCard.coef, reportCard.comment
+                    reportCard.studentFirstName, reportCard.studentLastName, reportCard.bins[0], average, reportCard.bins[1], reportCard.coef, reportCard.comment
             };
             tableData[i] = reportCardData;
         }

@@ -66,8 +66,8 @@ public class XmlReaderModel extends DbManager{
         closeConn();
     }
 
-    public void insertReport(int studentID, int sectionID, String bin1, String bin2, String bin3, String bin4, String bin5,
-                             String bin6, String bin7, String bin8, String coef, String comment){
+    public void insertReport(int studentID, int sectionID, int bin1, int bin2, int bin3, int bin4, int bin5,
+                             int bin6, int bin7, int bin8, int coef, String comment){
         Statement stmt;
         String insertSQL = "";
 
@@ -75,13 +75,19 @@ public class XmlReaderModel extends DbManager{
         try{
             stmt = conn.createStatement();
             insertSQL = String.format("INSERT INTO reports (bin1, bin2, bin3, bin4, bin5, bin6, bin7, bin8, coef, comment," +
-                    "studentID, sectionID) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s)",
+                    "studentID, sectionID) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, '%s', %s, %s)",
                     bin1, bin2, bin3, bin4, bin5, bin6, bin7, bin8, coef, comment, studentID, sectionID);
 
             stmt.execute(insertSQL);
             conn.commit();
-        } catch (SQLException ex){
-            System.out.println("Courses insert: " + ex.getMessage());
+        } catch (SQLException e){
+            do {
+                System.out.println("\n----- SQLException -----");
+                System.out.println("  SQLState:   " + e.getSQLState());
+                System.out.println("  Error Code: " + e.getErrorCode());
+                System.out.println("  Message:    " + e.getMessage());
+                e = e.getNextException();
+            } while (e != null);
         }
 
         closeConn();

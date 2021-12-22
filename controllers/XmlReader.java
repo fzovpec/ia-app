@@ -41,15 +41,15 @@ public class XmlReader {
                 int term = Integer.parseInt(element.getElementsByTagName("term").item(0).getTextContent());
                 String sectionName = element.getElementsByTagName("sectName").item(0).getTextContent();
                 // Report attributes
-                String bin1 = element.getElementsByTagName("bin1").item(0).getTextContent();
-                String bin2 = element.getElementsByTagName("bin2").item(0).getTextContent();
-                String bin3 = element.getElementsByTagName("bin3").item(0).getTextContent();
-                String bin4 = element.getElementsByTagName("bin4").item(0).getTextContent();
-                String bin5 = element.getElementsByTagName("bin5").item(0).getTextContent();
-                String bin6 = element.getElementsByTagName("bin6").item(0).getTextContent();
-                String bin7 = element.getElementsByTagName("bin7").item(0).getTextContent();
-                String bin8 = element.getElementsByTagName("bin8").item(0).getTextContent();
-                String coef = element.getElementsByTagName("coef").item(0).getTextContent();
+                int bin1 = Integer.parseInt(element.getElementsByTagName("bin1").item(0).getTextContent());
+                int bin2 = Integer.parseInt(element.getElementsByTagName("bin2").item(0).getTextContent());
+                int bin3 = Integer.parseInt(element.getElementsByTagName("bin3").item(0).getTextContent());
+                int bin4 = Integer.parseInt(element.getElementsByTagName("bin4").item(0).getTextContent());
+                int bin5 = Integer.parseInt(element.getElementsByTagName("bin5").item(0).getTextContent());
+                int bin6 = Integer.parseInt(element.getElementsByTagName("bin6").item(0).getTextContent());
+                int bin7 = Integer.parseInt(element.getElementsByTagName("bin7").item(0).getTextContent());
+                int bin8 = Integer.parseInt(element.getElementsByTagName("bin8").item(0).getTextContent());
+                int coef = Integer.parseInt(element.getElementsByTagName("coef").item(0).getTextContent());
                 String comment = element.getElementsByTagName("comment").item(0).getTextContent();
 
                 // Calling to the model to insert the data into database

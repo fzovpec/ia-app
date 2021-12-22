@@ -28,14 +28,17 @@ public class ReportCardModel extends DbManager{
             while(rs.next()){
                 ReportCard reportCard = new ReportCard();
 
-                reportCard.bin1 = rs.getString(2);
-                reportCard.bin2 = rs.getString(3);
-                reportCard.bin3 = rs.getString(4);
-                reportCard.bin4 = rs.getString(5);
-                reportCard.bin5 = rs.getString(6);
-                reportCard.bin6 = rs.getString(7);
-                reportCard.bin7 = rs.getString(8);
-                reportCard.bin8 = rs.getString(9);
+                int bin1 = rs.getInt(2);
+                int bin2 = rs.getInt(3);
+                int bin3 = rs.getInt(4);
+                int bin4 = rs.getInt(5);
+                int bin5 = rs.getInt(6);
+                int bin6 = rs.getInt(7);
+                int bin7 = rs.getInt(8);
+                int bin8 = rs.getInt(9);
+                int[] bins = {bin1, bin2, bin3, bin4, bin5, bin6, bin7, bin8};
+                reportCard.bins = bins;
+
                 reportCard.coef = rs.getString(10);
                 reportCard.comment = rs.getString(11);
                 reportCard.studentFirstName = rs.getString(15);
@@ -51,11 +54,10 @@ public class ReportCardModel extends DbManager{
                 reportCards.add(reportCard);
             }
         }
-        catch (SQLException ex){
+        catch (SQLException ex) {
             System.out.println("Error while selecting report cards: " + ex.getMessage());
             ex.printStackTrace();
         }
-
         ReportCard[] reportCardsArr = reportCards.toArray(new ReportCard[0]);
         return reportCardsArr;
     }
@@ -67,11 +69,11 @@ public class ReportCardModel extends DbManager{
 
         try{
             stmt = conn.createStatement();
-            insertSQL = String.format("UPDATE REPORTS SET BIN1='%s', BIN2='%s', BIN3='%s', BIN4='%s', " +
-                            "BIN5='%s', BIN6='%s', BIN7='%s', BIN8='%s', COEF='%s', COMMENT='%s' " +
+            insertSQL = String.format("UPDATE REPORTS SET BIN1=%s, BIN2=%s, BIN3=%s, BIN4=%s, " +
+                            "BIN5=%s, BIN6=%s, BIN7=%s, BIN8=%s, COEF='%s', COMMENT='%s' " +
                             "WHERE STUDENTID=%s AND SECTIONID=%s",
-                    reportCard.bin1, reportCard.bin2, reportCard.bin3, reportCard.bin4,
-                    reportCard.bin5, reportCard.bin6, reportCard.bin7, reportCard.bin8,
+                    reportCard.bins[0], reportCard.bins[1], reportCard.bins[2], reportCard.bins[3],
+                    reportCard.bins[4], reportCard.bins[5], reportCard.bins[6], reportCard.bins[7],
                     reportCard.coef, reportCard.comment, reportCard.studentID, reportCard.sectionID);
             stmt.execute(insertSQL);
             // Need to look at the other files, query submission is missing here

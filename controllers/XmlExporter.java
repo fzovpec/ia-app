@@ -63,14 +63,14 @@ public class XmlExporter {
                 term.setTextContent(String.valueOf(reportCard.term));
                 sectName.setTextContent(reportCard.sectionName);
                 courseName.setTextContent(reportCard.courseName);
-                bin1.setTextContent(String.valueOf(reportCard.bin1));
-                bin2.setTextContent(String.valueOf(reportCard.bin2));
-                bin3.setTextContent(String.valueOf(reportCard.bin3));
-                bin4.setTextContent(String.valueOf(reportCard.bin4));
-                bin5.setTextContent(String.valueOf(reportCard.bin5));
-                bin6.setTextContent(String.valueOf(reportCard.bin6));
-                bin7.setTextContent(String.valueOf(reportCard.bin7));
-                bin8.setTextContent(String.valueOf(reportCard.bin8));
+                bin1.setTextContent(String.valueOf(reportCard.bins[0]));
+                bin2.setTextContent(String.valueOf(reportCard.bins[1]));
+                bin3.setTextContent(String.valueOf(reportCard.bins[2]));
+                bin4.setTextContent(String.valueOf(reportCard.bins[3]));
+                bin5.setTextContent(String.valueOf(reportCard.bins[4]));
+                bin6.setTextContent(String.valueOf(reportCard.bins[5]));
+                bin7.setTextContent(String.valueOf(reportCard.bins[6]));
+                bin8.setTextContent(String.valueOf(reportCard.bins[7]));
                 coef.setTextContent(String.valueOf(reportCard.coef));
                 comment.setTextContent(String.valueOf(reportCard.comment));
 

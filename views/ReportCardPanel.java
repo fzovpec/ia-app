@@ -34,14 +34,14 @@ public class ReportCardPanel {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                reportCard.bin1 = bin1.getText();
-                reportCard.bin2 = bin2.getText();
-                reportCard.bin3 = bin3.getText();
-                reportCard.bin4 = bin4.getText();
-                reportCard.bin5 = bin5.getText();
-                reportCard.bin6 = bin6.getText();
-                reportCard.bin7 = bin7.getText();
-                reportCard.bin8 = bin8.getText();
+                reportCard.bins[0] = Integer.parseInt(bin1.getText());
+                reportCard.bins[1] = Integer.parseInt(bin2.getText());
+                reportCard.bins[2] = Integer.parseInt(bin3.getText());
+                reportCard.bins[3] = Integer.parseInt(bin4.getText());
+                reportCard.bins[4] = Integer.parseInt(bin5.getText());
+                reportCard.bins[5] = Integer.parseInt(bin6.getText());
+                reportCard.bins[6] = Integer.parseInt(bin7.getText());
+                reportCard.bins[7] = Integer.parseInt(bin8.getText());
                 reportCard.coef = coef.getText();
                 reportCard.comment = comment.getText();
 

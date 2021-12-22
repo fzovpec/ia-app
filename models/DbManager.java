@@ -47,8 +47,8 @@ public class DbManager {
             createSQL = "create table reports ("
                     + " id integer not null generated always as"
                     + " identity (start with 1, increment by 1),"
-                    + " bin1 varchar(50), bin2 varchar(50), bin3 varchar(50), bin4 varchar(50), bin5 varchar(50),"
-                    + " bin6 varchar(50), bin7 varchar(50), bin8 varchar(50), coef varchar(5), comment varchar(3000),"
+                    + " bin1 integer, bin2 integer, bin3 integer, bin4 integer, bin5 integer,"
+                    + " bin6 integer, bin7 integer, bin8 integer, coef integer, comment varchar(3000),"
                     + " studentID integer not null, sectionID integer not null,"
                     + " constraint courses_primary_key primary key (id),"
                     + " constraint studentID_foreign_key foreign key (studentID) references students(id),"
@@ -75,8 +75,14 @@ public class DbManager {
             conn.setAutoCommit(false);
             createTables();
 
-        } catch (SQLException EX) {
-            System.out.println(EX.getMessage());
+        } catch (SQLException e) {
+            do {
+                System.out.println("\n----- SQLException -----");
+                System.out.println("  SQLState:   " + e.getSQLState());
+                System.out.println("  Error Code: " + e.getErrorCode());
+                System.out.println("  Message:    " + e.getMessage());
+                e = e.getNextException();
+            } while (e != null);
             createDatabase(DBName);
         }
     }
