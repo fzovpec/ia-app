@@ -9,7 +9,7 @@ public class ReportCard {
     public String courseName;
 
     public int[] bins;
-    public float average;
+    public float[] average;
     public String coef;
     public String comment;
 
@@ -25,7 +25,7 @@ public class ReportCard {
         this.sectionName = sectionName;
         this.courseName = courseName;
         this.bins = bins;
-        this.average = (float) ((bins[0] + bins[1]) / 2.0);
+        this.average = computeAverages(bins);
 
         this.coef = coef;
         this.comment = comment;
@@ -35,4 +35,12 @@ public class ReportCard {
     }
 
     public ReportCard(){}
+
+    private float[] computeAverages(int[] bins){
+        float[] averages = new float[bins.length - 1];
+        for(int i = 0; i < bins.length - 1; i+=1){
+            averages[i] = (float) ((bins[i] + bins[i + 1]) / 2.0);
+        }
+        return averages;
+    }
 }

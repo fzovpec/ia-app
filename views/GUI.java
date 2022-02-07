@@ -111,7 +111,20 @@ public class GUI extends JFrame {
 
         reportCards = model.getReportsData();
         Object[][] tableContent = GUI.getTheDataForTheTable(reportCards);
-        Object[] columnTitles = new Object[]{"First Name", "Second Name", "bin1", "average", "bin2", "coef", "Comment"};
+        Object[] columnTitles = new Object[4 + 8 + 7];
+
+        columnTitles[0] = "First Name";
+        columnTitles[1] = "Second Name";
+        columnTitles[4 + 8 + 7 - 2] = "coef";
+        columnTitles[4 + 8 + 7 - 1] = "Comment";
+        for (int j = 2; j < (4 + 8 + 7 - 2); j+=2){
+            columnTitles[j] = "bin" + (j / 2);
+        }
+
+        for (int j = 2; j < (4 + 8 + 7 - 3); j+=2){
+            columnTitles[j + 1] = "average" + (j / 2);
+        }
+
         tableModel.setDataVector(tableContent, columnTitles);
 
         JTable table = new JTable(tableModel){
@@ -119,8 +132,10 @@ public class GUI extends JFrame {
                 return getValueAt(0, column).getClass();
             }
             public boolean isCellEditable(int row, int col){
-                if (col==2 || col == 4 || col==6){
-                    return true;
+                for (int j = 2; j < (4 + 8 + 7 - 2); j+=2){
+                    if(col == j){
+                        return true;
+                    }
                 }
                 return false;
             }
@@ -169,9 +184,10 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 for(int i = 0; i < table.getRowCount(); i++) {
-                    reportCards[i].bins[0] = Integer.parseInt(table.getValueAt(i, 2).toString());
-                    reportCards[i].bins[1] = Integer.parseInt(table.getValueAt(i, 4).toString());
-                    reportCards[i].comment = (String) table.getValueAt(i, 6);
+                    for (int j = 2; j < (4 + 8 + 7 - 2); j+=2){
+                        reportCards[i].bins[(j/2)-1] = Integer.parseInt(table.getValueAt(i, j).toString());
+                    }
+                    reportCards[i].comment = (String) table.getValueAt(i, 4 + 8 + 7 - 1);
 
                     model.updateReportCard(reportCards[i]);
                 }
@@ -220,7 +236,20 @@ public class GUI extends JFrame {
                 pack();
 
                 Object[][] tableContent = GUI.getTheDataForTheTable(reportCards);
-                Object[] columnTitles = new Object[]{"First Name", "Second Name", "bin1", "average", "bin2", "coef", "Comment"};
+                Object[] columnTitles = new Object[4 + 8 + 7];
+
+                columnTitles[0] = "First Name";
+                columnTitles[1] = "Second Name";
+                columnTitles[4 + 8 + 7 - 2] = "coef";
+                columnTitles[4 + 8 + 7 - 1] = "Comment";
+                for (int j = 2; j < (4 + 8 + 7 - 2); j+=2){
+                    columnTitles[j] = "bin" + (j / 2);
+                }
+
+                for (int j = 2; j < (4 + 8 + 7 - 3); j+=2){
+                    columnTitles[j + 1] = "average" + (j / 2);
+                }
+
                 tableModel.setDataVector(tableContent, columnTitles);
                 JTable table = new JTable(tableModel);
                 JScrollPane scroll = new JScrollPane(table);
@@ -379,7 +408,7 @@ public class GUI extends JFrame {
         ImageIcon iCopy = new ImageIcon("images/copy_s.png");  
         ImageIcon iPaste = new ImageIcon("images/paste_s.png");           
         ImageIcon iFind = new ImageIcon("images/find_s.png");
-        ImageIcon iPrefs = new ImageIcon("images/preferences_s.png");       
+        ImageIcon iPrefs = new ImageIcon("images/preferences_s.png");
         ImageIcon iAbout = new ImageIcon("images/about_s.png"); 
         
         JMenuItem comOpen = new JMenuItem("Open",iOpen);
@@ -449,10 +478,20 @@ public class GUI extends JFrame {
 
         for(int i = 0; i < reportCards.length; i++){
             ReportCard reportCard = reportCards[i];
-            float average = (float) ((reportCard.bins[0] + reportCard.bins[1]) / 2.0);
-            Object[] reportCardData = new Object[]{
-                    reportCard.studentFirstName, reportCard.studentLastName, reportCard.bins[0], average, reportCard.bins[1], reportCard.coef, reportCard.comment
-            };
+            Object[] reportCardData = new Object[4 + 8 + 7];
+
+            reportCardData[0] = reportCard.studentFirstName;
+            reportCardData[1] = reportCard.studentLastName;
+            reportCardData[4 + 8 + 7 - 2] = reportCard.coef;
+            reportCardData[4 + 8 + 7 - 1] = reportCard.comment;
+
+
+            for (int j = 2; j < (4 + 8 + 7 - 2); j+=2){
+                reportCardData[j] = reportCard.bins[(j-2) / 2];
+            }
+            for (int j = 2; j < (4 + 8 + 7 - 3); j+=2) {
+                reportCardData[j + 1] = reportCard.average[(j-2) / 2];
+            }
             tableData[i] = reportCardData;
         }
 

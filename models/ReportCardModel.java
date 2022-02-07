@@ -26,8 +26,6 @@ public class ReportCardModel extends DbManager{
             rs = stmt.executeQuery(statement);
 
             while(rs.next()){
-                ReportCard reportCard = new ReportCard();
-
                 int bin1 = rs.getInt(2);
                 int bin2 = rs.getInt(3);
                 int bin3 = rs.getInt(4);
@@ -37,19 +35,12 @@ public class ReportCardModel extends DbManager{
                 int bin7 = rs.getInt(8);
                 int bin8 = rs.getInt(9);
                 int[] bins = {bin1, bin2, bin3, bin4, bin5, bin6, bin7, bin8};
-                reportCard.bins = bins;
 
-                reportCard.coef = rs.getString(10);
-                reportCard.comment = rs.getString(11);
-                reportCard.studentFirstName = rs.getString(15);
-                reportCard.studentLastName = rs.getString(16);
-                reportCard.sectionName = rs.getString(18);
-                reportCard.year = rs.getInt(19);
-                reportCard.term = rs.getInt(20);
-                reportCard.courseName = rs.getString(23);
-
-                reportCard.studentID = rs.getInt(12);
-                reportCard.sectionID = rs.getInt(13);
+                ReportCard reportCard = new ReportCard(
+                        rs.getString(15), rs.getString(16), rs.getInt(19), rs.getInt(20),
+                        rs.getString(18), rs.getString(23), bins, rs.getString(10),
+                        rs.getString(11), rs.getInt(12), rs.getInt(13)
+                );
 
                 reportCards.add(reportCard);
             }
