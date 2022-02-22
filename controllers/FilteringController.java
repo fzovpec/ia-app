@@ -59,22 +59,24 @@ public class FilteringController {
 
     public ReportCard[] filterReportCards(String year, String term, String courseName, String sectionName, ReportCard[] reportCards){
         if(year.equals("All") && term.equals("All") && courseName.equals("All") && sectionName.equals("All")){
+            // If no filters set report cards are returned
             return reportCards;
         }
         List<ReportCard> filteredReportCards = new LinkedList<>();
         for(int i = 0; i < reportCards.length; i++) {
+            // Going over each report card and comparing whether it correspond to filters set
             boolean reportCardFollowsFilteringConditions = true;
 
-            if (!year.equals("All") && reportCards[i].year != Integer.parseInt(year)) {
+            if (!year.equals("All") && reportCards[i].year != Integer.parseInt(year)) { // Year corresponds to filtered year?
                 reportCardFollowsFilteringConditions = false;
             }
-            if (!term.equals("All") && reportCards[i].term != Integer.parseInt(term)) {
+            if (!term.equals("All") && reportCards[i].term != Integer.parseInt(term)) { // Term corresponds to filtered term?
                 reportCardFollowsFilteringConditions = false;
             }
-            if (!courseName.equals("All") && !reportCards[i].courseName.equals(courseName)) {
+            if (!courseName.equals("All") && !reportCards[i].courseName.equals(courseName)) { // Course corresponds to the filtered course?
                 reportCardFollowsFilteringConditions = false;
             }
-            if (!sectionName.equals("All") && !reportCards[i].sectionName.equals(sectionName)) {
+            if (!sectionName.equals("All") && !reportCards[i].sectionName.equals(sectionName)) { // Section corresponds to the filtered section?
                 reportCardFollowsFilteringConditions = false;
             }
 

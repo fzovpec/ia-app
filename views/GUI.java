@@ -59,6 +59,7 @@ public class GUI extends JFrame {
     JButton butPreferences;
     
     String FILEPATH;
+    public static int BINS_NUM = 8;
     
     /* MAIN method
     *  
@@ -132,7 +133,7 @@ public class GUI extends JFrame {
                 return getValueAt(0, column).getClass();
             }
             public boolean isCellEditable(int row, int col){
-                for (int j = 2; j < (4 + 8 + 7 - 2); j+=2){
+                for (int j = 2; j < (4 + BINS_NUM + (BINS_NUM - 1)); j+=2){
                     if(col == j){
                         return true;
                     }
@@ -156,19 +157,48 @@ public class GUI extends JFrame {
 
         butREAD = new JButton();
         butREAD.setFont(new Font("sansserif",0,14));
-        butREAD.setText("Read File");
+        butREAD.setText("Import");
         butREAD.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 selectFile('r');
                 readFile();
 
+                contentPanel.removeAll();
+                pack();
+
+                reportCards = model.getReportsData();
+                Object[][] tableContent = GUI.getTheDataForTheTable(reportCards);
+                Object[] columnTitles = new Object[4 + 8 + 7];
+
+                columnTitles[0] = "First Name";
+                columnTitles[1] = "Second Name";
+                columnTitles[4 + 8 + 7 - 2] = "coef";
+                columnTitles[4 + 8 + 7 - 1] = "Comment";
+                for (int j = 2; j < (4 + 8 + 7 - 2); j+=2){
+                    columnTitles[j] = "bin" + (j / 2);
+                }
+
+                for (int j = 2; j < (4 + 8 + 7 - 3); j+=2){
+                    columnTitles[j + 1] = "average" + (j / 2);
+                }
+
+                tableModel.setDataVector(tableContent, columnTitles);
+                JTable table = new JTable(tableModel);
+                JScrollPane scroll = new JScrollPane(table);
+                table.setPreferredScrollableViewportSize(table.getPreferredSize());
+                table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+                table.getColumnModel().getColumn(0).setPreferredWidth(100);
+
+                contentPanel.add(scroll, "width 100%, height 90%");
+                contentPanel.add(buttonPanel);
+                pack();
             }
         });
 
         // 7. -- Prepare the SAVE button
         butSAVE = new JButton();
         butSAVE.setFont(new Font("sansserif",0,14));
-        butSAVE.setText("Export File");
+        butSAVE.setText("Export");
         butSAVE.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 selectFile('s');
@@ -184,13 +214,46 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 for(int i = 0; i < table.getRowCount(); i++) {
-                    for (int j = 2; j < (4 + 8 + 7 - 2); j+=2){
-                        reportCards[i].bins[(j/2)-1] = Integer.parseInt(table.getValueAt(i, j).toString());
-                    }
-                    reportCards[i].comment = (String) table.getValueAt(i, 4 + 8 + 7 - 1);
+                    try {
+                        for (int j = 2; j < (4 + 8 + 7 - 2); j += 2) {
+                            reportCards[i].bins[(j / 2) - 1] = Integer.parseInt(table.getValueAt(i, j).toString());
+                        }
+                        reportCards[i].comment = (String) table.getValueAt(i, 4 + 8 + 7 - 1);
+                        model.updateReportCard(reportCards[i]);
 
-                    model.updateReportCard(reportCards[i]);
+                    }catch (NumberFormatException ex){
+                        JOptionPane.showMessageDialog(JFrame.getFrames()[0], "There's been an error in input");
+                    }
                 }
+                contentPanel.removeAll();
+                pack();
+
+                reportCards = model.getReportsData();
+                Object[][] tableContent = GUI.getTheDataForTheTable(reportCards);
+                Object[] columnTitles = new Object[4 + 8 + 7];
+
+                columnTitles[0] = "First Name";
+                columnTitles[1] = "Second Name";
+                columnTitles[4 + 8 + 7 - 2] = "coef";
+                columnTitles[4 + 8 + 7 - 1] = "Comment";
+                for (int j = 2; j < (4 + 8 + 7 - 2); j+=2){
+                    columnTitles[j] = "bin" + (j / 2);
+                }
+
+                for (int j = 2; j < (4 + 8 + 7 - 3); j+=2){
+                    columnTitles[j + 1] = "average" + (j / 2);
+                }
+
+                tableModel.setDataVector(tableContent, columnTitles);
+                JTable table = new JTable(tableModel);
+                JScrollPane scroll = new JScrollPane(table);
+                table.setPreferredScrollableViewportSize(table.getPreferredSize());
+                table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+                table.getColumnModel().getColumn(0).setPreferredWidth(100);
+
+                contentPanel.add(scroll, "width 100%, height 90%");
+                contentPanel.add(buttonPanel);
+                pack();
             }
         });
 
@@ -212,7 +275,7 @@ public class GUI extends JFrame {
 
             int[] terms = filteringController.getTerms(reportCards);
             Arrays.sort(years);
-            termsString = ArrayUtils.addAll(new String[]{"All"}, Arrays.toString(years).split("[\\[\\]]")[1].split(", "));
+            termsString = ArrayUtils.addAll(new String[]{"All"}, Arrays.toString(terms).split("[\\[\\]]")[1].split(", "));
 
             courses = ArrayUtils.addAll(new String[]{"All"}, filteringController.getCourses(reportCards));
             sections = ArrayUtils.addAll(new String[]{"All"}, filteringController.getSections(reportCards));
@@ -229,6 +292,7 @@ public class GUI extends JFrame {
         doFilteringButton.setText("Filter");
         doFilteringButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
+                reportCards = model.getReportsData();
                 reportCards = filteringController.filterReportCards(yearsCombo.getSelectedItem().toString(),
                         termsCombo.getSelectedItem().toString(), courseCombo.getSelectedItem().toString(), sectionCombo.getSelectedItem().toString(), reportCards);
 
@@ -411,7 +475,7 @@ public class GUI extends JFrame {
         ImageIcon iPrefs = new ImageIcon("images/preferences_s.png");
         ImageIcon iAbout = new ImageIcon("images/about_s.png"); 
         
-        JMenuItem comOpen = new JMenuItem("Open",iOpen);
+        JMenuItem comOpen = new JMenuItem("Import",iOpen);
         JMenuItem comSave = new JMenuItem("Export",iSave);
         JMenuItem comExit = new JMenuItem("Exit",iExit);
         JMenuItem comCut = new JMenuItem("Cut",iCut);
@@ -478,18 +542,18 @@ public class GUI extends JFrame {
 
         for(int i = 0; i < reportCards.length; i++){
             ReportCard reportCard = reportCards[i];
-            Object[] reportCardData = new Object[4 + 8 + 7];
+            Object[] reportCardData = new Object[4 + (BINS_NUM) + (BINS_NUM - 1)];
 
             reportCardData[0] = reportCard.studentFirstName;
             reportCardData[1] = reportCard.studentLastName;
-            reportCardData[4 + 8 + 7 - 2] = reportCard.coef;
-            reportCardData[4 + 8 + 7 - 1] = reportCard.comment;
+            reportCardData[4 + (BINS_NUM) + (BINS_NUM - 1) - 2] = reportCard.coef;
+            reportCardData[4 + (BINS_NUM) + (BINS_NUM - 1) - 1] = reportCard.comment;
 
 
-            for (int j = 2; j < (4 + 8 + 7 - 2); j+=2){
+            for (int j = 2; j < (4 + (BINS_NUM) + (BINS_NUM - 1) - 2); j+=2){
                 reportCardData[j] = reportCard.bins[(j-2) / 2];
             }
-            for (int j = 2; j < (4 + 8 + 7 - 3); j+=2) {
+            for (int j = 2; j < (4 + (BINS_NUM) + (BINS_NUM - 1) - 3); j+=2) {
                 reportCardData[j + 1] = reportCard.average[(j-2) / 2];
             }
             tableData[i] = reportCardData;

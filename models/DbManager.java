@@ -73,16 +73,9 @@ public class DbManager {
             DriverManager.registerDriver(new org.apache.derby.jdbc.EmbeddedDriver());
             conn = DriverManager.getConnection("jdbc:derby:" + DBName +";");
             conn.setAutoCommit(false);
-            createTables();
 
         } catch (SQLException e) {
-            do {
-                System.out.println("\n----- SQLException -----");
-                System.out.println("  SQLState:   " + e.getSQLState());
-                System.out.println("  Error Code: " + e.getErrorCode());
-                System.out.println("  Message:    " + e.getMessage());
-                e = e.getNextException();
-            } while (e != null);
+            // Create a new database
             createDatabase(DBName);
         }
     }
@@ -93,6 +86,7 @@ public class DbManager {
             DriverManager.registerDriver(new org.apache.derby.jdbc.EmbeddedDriver());
             conn = DriverManager.getConnection("jdbc:derby:" + DBName +";create=true");
             conn.setAutoCommit(false);
+            createTables();
 
         } catch (SQLException EX2) {
             System.out.println("The exception occurred " + EX2);

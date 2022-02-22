@@ -37,9 +37,9 @@ public class ReportCard {
     public ReportCard(){}
 
     private float[] computeAverages(int[] bins){
-        float[] averages = new float[bins.length - 1];
+        float[] averages = new float[bins.length - 1]; // Initializing array of averages
         for(int i = 0; i < bins.length - 1; i+=1){
-            averages[i] = (float) ((bins[i] + bins[i + 1]) / 2.0);
+            averages[i] = (float) ((bins[i] + bins[i + 1]) / 2.0); // Computing an average
         }
         return averages;
     }

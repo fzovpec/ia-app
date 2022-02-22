@@ -66,8 +66,7 @@ public class XmlReaderModel extends DbManager{
         closeConn();
     }
 
-    public void insertReport(int studentID, int sectionID, int bin1, int bin2, int bin3, int bin4, int bin5,
-                             int bin6, int bin7, int bin8, int coef, String comment){
+    public void insertReport(int studentID, int sectionID, int bins[], int coef, String comment){
         Statement stmt;
         String insertSQL = "";
 
@@ -76,7 +75,7 @@ public class XmlReaderModel extends DbManager{
             stmt = conn.createStatement();
             insertSQL = String.format("INSERT INTO reports (bin1, bin2, bin3, bin4, bin5, bin6, bin7, bin8, coef, comment," +
                     "studentID, sectionID) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, '%s', %s, %s)",
-                    bin1, bin2, bin3, bin4, bin5, bin6, bin7, bin8, coef, comment, studentID, sectionID);
+                    bins[0], bins[1], bins[2], bins[3], bins[4], bins[5], bins[6], bins[7], coef, comment, studentID, sectionID);
 
             stmt.execute(insertSQL);
             conn.commit();

@@ -25,6 +25,7 @@ public class ImportDataController {
 
     public boolean verifyFile(String filePath){
         // verifies file format
+        int BINS_TOTAL = 8;
         if (!filePath.contains(".xml")){
             return false;
         }
@@ -42,30 +43,26 @@ public class ImportDataController {
                 return false;
             }
 
-            for (int i = 0; i < nodeList.getLength(); i++) {
+            for (int i = 0; i < nodeList.getLength(); i++) { // Looping through each report element
                 Node node = nodeList.item(i);
                 Element element = (Element) node;
                 // Verifying that all the files contain necessary elements
-                if (element.getElementsByTagName("studID").getLength() != 1) return false;
-                if (element.getElementsByTagName("studFN").getLength() != 1) return false;
-                if (element.getElementsByTagName("studLN").getLength() != 1) return false;
-                if (element.getElementsByTagName("courseID").getLength() != 1) return false;
-                if (element.getElementsByTagName("courseName").getLength() != 1) return false;
-                if (element.getElementsByTagName("sectID").getLength() != 1) return false;
-                if (element.getElementsByTagName("year").getLength() != 1) return false;
-                if (element.getElementsByTagName("term").getLength() != 1) return false;
-                if (element.getElementsByTagName("sectName").getLength() != 1) return false;
+                if (element.getElementsByTagName("studID").getLength() != 1) return false;     // Verifying if student id is present and not empty
+                if (element.getElementsByTagName("studFN").getLength() != 1) return false;     // Verifying if student first name is present and not empty
+                if (element.getElementsByTagName("studLN").getLength() != 1) return false;     // Verifying if student last name is present and not empty
+                if (element.getElementsByTagName("courseID").getLength() != 1) return false;   // Verifying if courseID is present and not empty
+                if (element.getElementsByTagName("courseName").getLength() != 1) return false; // Verifying if courseName is present and not empty
+                if (element.getElementsByTagName("sectID").getLength() != 1) return false;     // Verifying if sectID is present and not empty
+                if (element.getElementsByTagName("year").getLength() != 1) return false;       // Verifying if year is present and not empty
+                if (element.getElementsByTagName("term").getLength() != 1) return false;       // Verifying if term is present and not empty
+                if (element.getElementsByTagName("sectName").getLength() != 1) return false;   // Verifying if sectName is present and not empty
 
-                if (element.getElementsByTagName("bin1").getLength() != 1) return false;
-                if (element.getElementsByTagName("bin2").getLength() != 1) return false;
-                if (element.getElementsByTagName("bin3").getLength() != 1) return false;
-                if (element.getElementsByTagName("bin5").getLength() != 1) return false;
-                if (element.getElementsByTagName("bin6").getLength() != 1) return false;
-                if (element.getElementsByTagName("bin7").getLength() != 1) return false;
-                if (element.getElementsByTagName("bin8").getLength() != 1) return false;
+                for (int j = 1; j <= BINS_TOTAL; j++) {
+                    if (element.getElementsByTagName("bin" + j).getLength() == 0) return false; // Verifying if bin is present
+                }
 
-                if (element.getElementsByTagName("coef").getLength() != 1) return false;
-                if (element.getElementsByTagName("comment").getLength() != 1) return false;
+                if (element.getElementsByTagName("coef").getLength() != 1) return false;        // Verifying if coef is present and not empty
+                if (element.getElementsByTagName("comment").getLength() != 1) return false;     // Verifying if comment is present and not empty
             }
 
         } catch (Exception ex){
